@@ -1,15 +1,9 @@
 import 'components/Organism/Editor/Editor.scss';
-import { useFormik } from 'formik';
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Input,
-  Stack,
-  useColorModeValue,
-} from '@chakra-ui/react';
-
+import { Box, Stack } from '@chakra-ui/react';
 import { useEffect } from 'react';
+import * as Yup from 'yup';
+import { useFormik, Formik } from 'formik';
+import FormikControl from 'components/Pages/Form/FormikControl';
 
 export default function UserDetails({
   yourDetails,
@@ -31,184 +25,155 @@ export default function UserDetails({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values]);
 
+  const validationSchema = Yup.object({
+    yourName: Yup.string('Enter your First name')
+      .trim()
+      .required('First Name is required'),
+    yourCompany: Yup.string('Enter your Company name')
+      .trim()
+      .required('Company is required'),
+    yourBankBranch: Yup.string('Enter your Bank branch')
+      .trim()
+      .required('Bank branch is required'),
+    yourAddress: Yup.string('Enter your Company name')
+      .trim()
+      .required('Company is required'),
+    yourBank: Yup.string('Enter your Bank name')
+      .trim()
+      .required('Bank name is required'),
+    yourCity: Yup.string('Enter your City name')
+      .trim()
+      .required('City Name is required'),
+    yourAccountNumber: Yup.number('Enter your Account Number')
+      .min(1)
+      .required('Account Number is required'),
+    yourWebsite: Yup.string('Enter your Comapny URL')
+      .trim()
+      .url('Enter correct URL')
+      .required('Comapny URL is required'),
+    yourEmail: Yup.string('Enter your Email Address')
+      .trim()
+      .email('Enter Valid email')
+      .required('Email is required'),
+    yourPhone: Yup.number('Enter your Phone Number')
+      // .trim()
+      .typeError('Must be a valid phone number')
+      .required('Phone Number is required'),
+  });
+
   return (
     <>
       {/* User Details Start*/}
-      <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="5">
-        <Box>
-          <FormControl id="firstName">
-            <FormLabel>Your Name</FormLabel>
-            <Input
-              type="text"
-              name="yourDetails.yourName"
-              size={'lg'}
-              htmlSize={30}
-              placeholder="Your Name"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourName}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="youremail">
-            <FormLabel>Your Email</FormLabel>
-            <Input
-              id="email"
-              name="yourDetails.yourEmail"
-              type="email"
-              size={'lg'}
-              htmlSize={30}
-              placeholder="Your Email"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourEmail}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="yourphone">
-            <FormLabel>Your Phone</FormLabel>
-            <Input
-              type="number"
-              onKeyDown={e =>
-                ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
-              }
-              size={'lg'}
-              name="yourDetails.yourPhone"
-              htmlSize={30}
-              placeholder="Your Phone"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourPhone}
-            />
-          </FormControl>
-        </Box>
-      </Stack>
-      <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="5">
-        <Box>
-          <FormControl id="yourcompany">
-            <FormLabel>Your Company</FormLabel>
-            <Input
-              type="text"
-              size={'lg'}
-              htmlSize={30}
-              name="yourDetails.yourCompany"
-              placeholder="Your Company"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourCompany}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="youraddress">
-            <FormLabel>Your Address</FormLabel>
-            <Input
-              type="text"
-              size={'lg'}
-              name="yourDetails.yourAddress"
-              htmlSize={30}
-              placeholder="Your Address"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourAddress}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="yourcity">
-            <FormLabel>Your City</FormLabel>
-            <Input
-              type="text"
-              size={'lg'}
-              htmlSize={30}
-              name="yourDetails.yourCity"
-              placeholder="Your City"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourCity}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="yourwebsite">
-            <FormLabel>Your Website</FormLabel>
+      <Formik
+        initialValues={yourDetails}
+        validationSchema={validationSchema}
+        validateOnChange={true}
+        validateOnMount={false}
+        validateOnBlur={true}
+      >
+        {() => {
+          return (
+            <>
+              <Stack
+                direction={{ base: 'column', md: 'row' }}
+                spacing={8}
+                my="5"
+              >
+                <Box>
+                  <FormikControl name="yourName" placeholder="Your Name" />
+                </Box>
 
-            <Input
-              type="text"
-              size={'lg'}
-              htmlSize={30}
-              name="yourDetails.yourWebsite"
-              placeholder="Your Website"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourWebsite}
-            />
-          </FormControl>
-        </Box>
-      </Stack>
-      <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="5">
-        <Box>
-          <FormControl id="yourAccount">
-            <FormLabel>Your Account Number</FormLabel>
-            <Input
-              type="number"
-              min={0}
-              size={'lg'}
-              htmlSize={30}
-              onKeyDown={e =>
-                ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
-              }
-              placeholder="Your Account Number"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              name="yourDetails.yourAccountNumber"
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourAccountNumber}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="yourBank">
-            <FormLabel>Your Bank</FormLabel>
-            <Input
-              type="text"
-              size={'lg'}
-              htmlSize={30}
-              placeholder="Your Bank"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              name="yourDetails.yourBank"
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourBank}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="yourBankBranch">
-            <FormLabel>Your Bank Branch</FormLabel>
-            <Input
-              type="text"
-              size={'lg'}
-              htmlSize={30}
-              placeholder="Your Bank Branch"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              name="yourDetails.yourBankBranch"
-              onChange={formik.handleChange}
-              value={formik.values.yourDetails.yourBankBranch}
-            />
-          </FormControl>
-        </Box>
-      </Stack>
+                <Box>
+                  <FormikControl
+                    name="yourEmail"
+                    type="email"
+                    placeholder="Your Email"
+                  />
+                </Box>
+                <Box>
+                  <FormikControl
+                    type="text"
+                    name="yourPhone"
+                    placeholder="Your Phone"
+                    onKeyDown={e =>
+                      ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
+                    }
+                  />
+                </Box>
+              </Stack>
+              <Stack
+                direction={{ base: 'column', md: 'row' }}
+                spacing={8}
+                my="5"
+              >
+                <Box>
+                  <FormikControl
+                    type="text"
+                    size={'lg'}
+                    name="yourCompany"
+                    placeholder="Your Company"
+                  />
+                </Box>
+                <Box>
+                  <FormikControl
+                    type="text"
+                    size={'lg'}
+                    name="yourAddress"
+                    placeholder="Your Address"
+                  />
+                </Box>
+                <Box>
+                  <FormikControl
+                    type="text"
+                    name="yourCity"
+                    placeholder="Your City"
+                  />
+                </Box>
+                <Box>
+                  <FormikControl
+                    type="text"
+                    name="yourWebsite"
+                    placeholder="Your Website"
+                  />
+                </Box>
+              </Stack>
+              <Stack
+                direction={{ base: 'column', md: 'row' }}
+                spacing={8}
+                my="5"
+              >
+                <Box>
+                  <FormikControl
+                    type="text"
+                    min={0}
+                    size={'lg'}
+                    name="yourAccountNumber"
+                    placeholder="Your Account Number"
+                    onKeyDown={e =>
+                      ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
+                    }
+                  />
+                </Box>
+
+                <Box>
+                  <FormikControl
+                    type="text"
+                    name="yourBank"
+                    placeholder="Your Bank"
+                  />
+                </Box>
+                <Box>
+                  <FormikControl
+                    type="text"
+                    name="yourBankBranch"
+                    placeholder="Your Bank Branch"
+                  />
+                </Box>
+              </Stack>
+            </>
+          );
+        }}
+      </Formik>
       {/* User Details End */}
     </>
   );
