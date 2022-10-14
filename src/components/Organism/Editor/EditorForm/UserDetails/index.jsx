@@ -1,8 +1,5 @@
 import 'components/Organism/Editor/Editor.scss';
 import { Box, Stack } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import * as Yup from 'yup';
-import { useFormik, Formik } from 'formik';
 import FormikControl from 'components/Pages/Form/FormikControl';
 
 export default function UserDetails({
