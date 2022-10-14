@@ -2,21 +2,18 @@ import 'components/Organism/Editor/Editor.scss';
 import { Box, Stack, useToast } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import FormikControl from 'components/Pages/Form/FormikControl';
+import { useEffect } from 'react';
 
-export default function InvoiceDates({
-  dueDate,
-  invoiceDate,
-  invoiceNumber,
-  invoiceDataValues,
-  // getDates,
-  resetForm,
-}) {
+export default function InvoiceDates() {
   // const formik = useFormik({
   //   initialValues: {
   //     invoiceDataValues,
   //   },
   // });
-  const { setFieldValue, values } = useFormikContext();
+  const {
+    setFieldValue,
+    values: { invoiceDataValues },
+  } = useFormikContext();
 
   const toast = useToast();
   // useEffect(() => {
@@ -48,7 +45,7 @@ export default function InvoiceDates({
   // }, [formik.values.invoiceDataValues]);
 
   const handleDateChange = e => {
-    if (values.invoiceDataValues.invoiceDate !== '') {
+    if (invoiceDataValues?.invoiceDate !== '') {
       setFieldValue('invoiceDataValues.dueDate', e.target.value);
     } else {
       toast({
@@ -72,13 +69,13 @@ export default function InvoiceDates({
   // });
   // console.log(formik.values.invoiceDates);
   // suppose the invoice date is cleared or changed  and the new invoice date selected is ahead of invoice due date, the useEffect runs
-  // useEffect(() => {
-  //   const { invoiceDate, dueDate } = invoiceDates;
-  //   if (invoiceDate > dueDate) {
-  //     formik.setFieldValue('dueDate', '');
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [invoiceDates.invoiceDate, invoiceDates.dueDate]);
+  useEffect(() => {
+    const { invoiceDate, dueDate } = invoiceDataValues;
+    if (invoiceDate > dueDate) {
+      setFieldValue('dueDate', '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoiceDataValues?.invoiceDate, invoiceDataValues?.dueDate]);
 
   return (
     <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="20">
@@ -106,8 +103,12 @@ export default function InvoiceDates({
           name="invoiceDataValues.dueDate"
           placeholder="Due Date"
           onChange={handleDateChange}
-          min={values.invoiceDate}
-          value={values?.invoiceDate < values?.dueDate ? values.dueDate : ''}
+          min={invoiceDataValues.invoiceDate}
+          value={
+            invoiceDataValues.invoiceDate < invoiceDataValues.dueDate
+              ? invoiceDataValues.dueDate
+              : ''
+          }
         />
       </Box>
     </Stack>
