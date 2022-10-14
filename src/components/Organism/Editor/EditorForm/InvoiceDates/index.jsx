@@ -55,8 +55,6 @@ export default function InvoiceDates() {
         isClosable: true,
         position: 'bottom-right',
       });
-
-      // formik.setFieldValue('dueDate', '');
     }
   };
   // const validationSchema = Yup.object({
@@ -71,8 +69,8 @@ export default function InvoiceDates() {
   // suppose the invoice date is cleared or changed  and the new invoice date selected is ahead of invoice due date, the useEffect runs
   useEffect(() => {
     const { invoiceDate, dueDate } = invoiceDataValues;
-    if (invoiceDate > dueDate) {
-      setFieldValue('dueDate', '');
+    if (invoiceDate > dueDate || !invoiceDate) {
+      setFieldValue('invoiceDataValues.dueDate', '');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoiceDataValues?.invoiceDate, invoiceDataValues?.dueDate]);
@@ -104,11 +102,7 @@ export default function InvoiceDates() {
           placeholder="Due Date"
           onChange={handleDateChange}
           min={invoiceDataValues.invoiceDate}
-          value={
-            invoiceDataValues.invoiceDate < invoiceDataValues.dueDate
-              ? invoiceDataValues.dueDate
-              : ''
-          }
+          value={invoiceDataValues.invoiceDate ? invoiceDataValues.dueDate : ''}
         />
       </Box>
     </Stack>

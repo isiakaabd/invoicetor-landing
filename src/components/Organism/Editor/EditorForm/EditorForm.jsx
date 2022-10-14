@@ -249,7 +249,8 @@ export default function EditorForm() {
         initialValues={invoice}
         enableReinitialize={true}
       >
-        {({ handleSubmit, dirty, isValid }) => {
+        {({ handleSubmit, dirty, values, isValid }) => {
+          console.log(values);
           return (
             <Form
               onSubmit={handleSubmit}
