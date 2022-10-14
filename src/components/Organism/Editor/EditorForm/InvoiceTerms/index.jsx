@@ -1,34 +1,28 @@
 import 'components/Organism/Editor/Editor.scss';
-import { useFormik } from 'formik';
-import {
-  Box,
-  Stack,
-  useColorModeValue,
-  Text,
-  Textarea,
-  Flex,
-  Tooltip,
-  IconButton,
-} from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
+import { Box, Stack, Text, Flex, Tooltip, IconButton } from '@chakra-ui/react';
 import * as BiIcons from 'react-icons/bi';
+import FormikControl from 'components/Pages/Form/FormikControl';
 
-import { useEffect } from 'react';
+export default function InvoiceTerms({ getTerms, resetForm }) {
+  const {
+    values: { terms },
+    setFieldValue,
+  } = useFormikContext();
+  // const formik = useFormik({
+  //   initialValues: { terms },
+  // });
+  // useEffect(() => {
+  //   if (resetForm) {
+  //     formik.resetForm();
+  //   }
+  // }, [resetForm, formik]);
 
-export default function InvoiceTerms({ terms, getTerms, resetForm }) {
-  const formik = useFormik({
-    initialValues: { terms },
-  });
-  useEffect(() => {
-    if (resetForm) {
-      formik.resetForm();
-    }
-  }, [resetForm, formik]);
+  // useEffect(() => {
+  //   getTerms(formik.values.terms);
 
-  useEffect(() => {
-    getTerms(formik.values.terms);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values]);
 
   return (
     <>
@@ -37,35 +31,24 @@ export default function InvoiceTerms({ terms, getTerms, resetForm }) {
         <Box>
           <Text mb="8px">Terms & Condition : </Text>
           <Flex>
-            <Textarea
-              isDisabled={formik.values.terms.termToggle ? true : false}
-              size={'lg'}
+            <FormikControl
+              control="textarea"
+              isDisabled={terms?.termToggle ? true : false}
               name="terms.term"
               placeholder="Please make the payment by the due date"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              value={formik.values.terms.term}
-              onChange={formik.handleChange}
             />
             {
               // TOGGLE Icon button
-              <Tooltip label={formik.values.terms.termToggle ? 'Show' : 'Hide'}>
+              <Tooltip label={terms?.termToggle ? 'Show' : 'Hide'}>
                 <IconButton
                   variant="outline"
                   aria-label="Options"
                   mx={2}
                   icon={
-                    formik.values.terms.termToggle ? (
-                      <BiIcons.BiHide />
-                    ) : (
-                      <BiIcons.BiShow />
-                    )
+                    terms?.termToggle ? <BiIcons.BiHide /> : <BiIcons.BiShow />
                   }
                   onClick={e =>
-                    formik.setFieldValue(
-                      'terms.termToggle',
-                      !formik.values.terms.termToggle
-                    )
+                    setFieldValue('terms.termToggle', !terms?.termToggle)
                   }
                 />
               </Tooltip>

@@ -1,6 +1,6 @@
 import 'components/Organism/Editor/Editor.scss';
-import { useState, useEffect } from 'react';
-import { useFormik } from 'formik';
+import { useState } from 'react';
+import { useFormikContext } from 'formik';
 import {
   Box,
   Image,
@@ -29,31 +29,17 @@ import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
 import * as MdIcons from 'react-icons/md';
 
-export default function InvoiceImage({
-  yourLogo,
-  resetForm,
-  getLogo,
-  alertMessage,
-}) {
+export default function InvoiceImage({ alertMessage }) {
   const [sliderValue, setSliderValue] = useState('150');
   const [isOpenPop, setIsOpenPop] = useState(false);
   const open = () => setIsOpenPop(!isOpenPop);
   const close = () => setIsOpenPop(false);
-  const formik = useFormik({
-    initialValues: { yourLogo },
-  });
-  // aleart message
 
-  useEffect(() => {
-    if (resetForm) {
-      formik.values.yourLogo = '';
-    }
-  }, [resetForm, formik]);
-
-  useEffect(() => {
-    getLogo(formik.values.yourLogo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values]);
+  const {
+    setFieldValue,
+    values: { yourLogo },
+  } = useFormikContext();
+  // // aleart message
 
   const getBase64 = file => {
     return new Promise((resolve, reject) => {
@@ -68,8 +54,8 @@ export default function InvoiceImage({
   const imageUpload = e => {
     let file = e.target.files[0];
     getBase64(file).then(base64 => {
-      formik.setFieldValue('yourLogo.image', base64);
-      formik.setFieldValue('yourLogo.imageSize', sliderValue);
+      setFieldValue('yourLogo.image', base64);
+      setFieldValue('yourLogo.imageSize', sliderValue);
     });
     alertMessage('Image uploaded successfully', 'success');
   };
@@ -77,7 +63,7 @@ export default function InvoiceImage({
   // change Image Size using slider
   const changeImageSize = value => {
     setSliderValue(value);
-    formik.setFieldValue('yourLogo.imageSize', value);
+    setFieldValue('yourLogo.imageSize', value);
   };
 
   return (
@@ -86,18 +72,19 @@ export default function InvoiceImage({
         <Box>
           <Popover isOpen={isOpenPop} onClose={close} placement="top-start">
             <PopoverTrigger>
-              {formik.values.yourLogo.image ? (
+              {yourLogo?.image ? (
                 <Flex>
                   <Image
-                    src={formik.values.yourLogo.image}
+                    src={yourLogo.image}
                     alt="company logo"
                     className="company-logo"
+                    name="yourLogo.image"
                     style={{
                       borderRadius: '10px',
                       marginBottom: '10px',
                     }}
-                    w={formik.values.yourLogo.imageSize}
-                    h={formik.values.yourLogo.imageSize}
+                    w={yourLogo?.imageSize}
+                    h={yourLogo?.imageSize}
                     onClick={() => {
                       document.getElementById('uploadFile').click();
                     }}
@@ -129,8 +116,8 @@ export default function InvoiceImage({
                       <MenuItem
                         icon={<RiIcons.RiDeleteBin3Line />}
                         onClick={() => {
-                          formik.setFieldValue('yourLogo.image', '');
-                          formik.setFieldValue('yourLogo.imageSize', '150');
+                          setFieldValue('yourLogo.image', '');
+                          setFieldValue('yourLogo.imageSize', '150');
 
                           alertMessage('🗑️ Company Logo Cleared');
                         }}
@@ -166,7 +153,7 @@ export default function InvoiceImage({
                   <Slider
                     mb={7}
                     aria-label="slider-ex-3"
-                    defaultValue={formik.values.yourLogo.imageSize}
+                    defaultValue={yourLogo?.imageSize}
                     orientation="horizontal"
                     colorScheme={'purple'}
                     maxW="200"

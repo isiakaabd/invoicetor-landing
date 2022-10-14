@@ -8,12 +8,12 @@ import { Field, ErrorMessage } from 'formik';
 import PropTypes from 'prop-types';
 import { TextError } from './TextError';
 
-const C = ({ type, name, placeholder, size, ...rest }) => {
+const C = ({ type, name, placeholder, size, value, ...rest }) => {
   return (
     <Input
       type={type}
       size={size}
-      name={name}
+      value={value}
       htmlSize={80}
       placeholder={placeholder}
       bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
@@ -23,15 +23,17 @@ const C = ({ type, name, placeholder, size, ...rest }) => {
   );
 };
 C.defaultProps = {
-  type: 'text',
+  type: 'date',
   size: 'lg',
 };
 C.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
 };
-const Inputs = props => {
-  const { name, type, value, placeholder, size, ...rest } = props;
+//   const { setFieldValue } = useFormik();
+const Date = props => {
+  const { name, type, placeholder, size, ...rest } = props;
+
   return (
     <>
       <FormControl id={name}>
@@ -51,9 +53,9 @@ const Inputs = props => {
     </>
   );
 };
-Inputs.propTypes = {
+Date.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
 };
 
-export default Inputs;
+export default Date;

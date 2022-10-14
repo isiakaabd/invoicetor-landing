@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useFormik } from 'formik';
+import { useFormikContext } from 'formik';
 import {
   Box,
   HStack,
@@ -44,7 +43,7 @@ export default function DigitalSignature({
     onOpen: onOpenDigitalModal,
     onClose: onCloseDigitalModal,
   } = useDisclosure();
-
+  const { values, setFieldValue, handleChange } = useFormikContext();
   const getBase64 = file => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -54,20 +53,20 @@ export default function DigitalSignature({
     });
   };
 
-  const formik = useFormik({
-    initialValues: { digitalSignature, registrationNumber },
-  });
-  useEffect(() => {
-    if (resetForm) {
-      formik.resetForm();
-    }
-  }, [resetForm, formik]);
+  // const formik = useFormik({
+  //   initialValues: { digitalSignature, registrationNumber },
+  // });
+  // useEffect(() => {
+  //   if (resetForm) {
+  //     formik.resetForm();
+  //   }
+  // }, [resetForm, formik]);
 
-  useEffect(() => {
-    getDigitalSignature(formik.values);
+  // useEffect(() => {
+  //   getDigitalSignature(formik.values);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values]);
 
   // upload signature in localstorage starts
   const signatureUpload = e => {
@@ -76,7 +75,7 @@ export default function DigitalSignature({
 
     if (fileType === 'image/png' || fileType === 'image/jpeg') {
       getBase64(file).then(base64 => {
-        formik.setFieldValue('digitalSignature.signature', base64);
+        setFieldValue('digitalSignature.signature', base64);
       });
       e.target.value = '';
     } else {
@@ -171,10 +170,7 @@ export default function DigitalSignature({
                     color="white"
                     as="button"
                     onClick={() => {
-                      formik.setFieldValue(
-                        'digitalSignature.sealColor',
-                        'red.400'
-                      );
+                      setFieldValue('digitalSignature.sealColor', 'red.400');
                     }}
                   />{' '}
                   <Circle
@@ -183,10 +179,7 @@ export default function DigitalSignature({
                     color="white"
                     as="button"
                     onClick={() => {
-                      formik.setFieldValue(
-                        'digitalSignature.sealColor',
-                        'blue.400'
-                      );
+                      setFieldValue('digitalSignature.sealColor', 'blue.400');
                     }}
                   />{' '}
                   <Circle
@@ -195,10 +188,7 @@ export default function DigitalSignature({
                     color="white"
                     as="button"
                     onClick={() => {
-                      formik.setFieldValue(
-                        'digitalSignature.sealColor',
-                        'purple.400'
-                      );
+                      setFieldValue('digitalSignature.sealColor', 'purple.400');
                     }}
                   />{' '}
                   <Circle
@@ -207,10 +197,7 @@ export default function DigitalSignature({
                     color="white"
                     as="button"
                     onClick={() => {
-                      formik.setFieldValue(
-                        'digitalSignature.sealColor',
-                        'yellow.400'
-                      );
+                      setFieldValue('digitalSignature.sealColor', 'yellow.400');
                     }}
                   />{' '}
                   <Circle
@@ -219,10 +206,7 @@ export default function DigitalSignature({
                     color="white"
                     as="button"
                     onClick={() => {
-                      formik.setFieldValue(
-                        'digitalSignature.sealColor',
-                        'green.400'
-                      );
+                      setFieldValue('digitalSignature.sealColor', 'green.400');
                     }}
                   />
                 </HStack>
@@ -233,14 +217,14 @@ export default function DigitalSignature({
                   </FormLabel>
                   <Input
                     placeholder={'Enter Business Reg. Number'}
-                    value={formik.values.registrationNumber}
+                    value={values.registrationNumber}
                     type="number"
                     name="registrationNumber"
                     min={0}
                     onKeyDown={e =>
                       ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
                     }
-                    onChange={formik.handleChange}
+                    onChange={handleChange}
                     mb={'5'}
                   />
                 </FormControl>
@@ -273,7 +257,7 @@ export default function DigitalSignature({
                       Upload Signature
                     </Button>
                     <Spacer />
-                    {formik.values.digitalSignature.signature && (
+                    {values.digitalSignature.signature && (
                       <IconButton
                         variant="solid"
                         bg={'red.400'}
@@ -284,10 +268,7 @@ export default function DigitalSignature({
                         }}
                         rounded={'lg'}
                         onClick={() =>
-                          formik.setFieldValue(
-                            'digitalSignature.signature',
-                            null
-                          )
+                          setFieldValue('digitalSignature.signature', null)
                         }
                       >
                         <RiIcons.RiDeleteBinLine />
@@ -344,41 +325,39 @@ export default function DigitalSignature({
                     rounded={'lg'}
                     mx={2}
                     icon={
-                      formik.values.digitalSignature.signatureToggle ? (
+                      values.digitalSignature.signatureToggle ? (
                         <BiIcons.BiShow />
                       ) : (
                         <BiIcons.BiHide />
                       )
                     }
                     onClick={() => {
-                      formik.setFieldValue(
+                      setFieldValue(
                         'digitalSignature.signatureToggle',
-                        !formik.values.digitalSignature.signatureToggle
+                        !values.digitalSignature.signatureToggle
                       );
                     }}
                   />
                 </Flex>
 
-                {formik.values.digitalSignature.signatureToggle && (
+                {values.digitalSignature.signatureToggle && (
                   <Stack my={'3rem'}>
                     <Box
                       className="stamp is-nope"
                       borderWidth="0.5rem"
                       borderStyle="double"
                       borderRadius="10px"
-                      color={
-                        formik.values.digitalSignature?.sealColor || 'red.400'
-                      }
-                      borderColor={formik.values.digitalSignature.sealColor}
+                      color={values.digitalSignature?.sealColor || 'red.400'}
+                      borderColor={values.digitalSignature.sealColor}
                     >
                       {yourCompany ? yourCompany : 'Your Company Name'} <br />{' '}
-                      Reg. No :{formik.values.registrationNumber}
+                      Reg. No :{values.registrationNumber}
                     </Box>
 
-                    {formik.values.digitalSignature.signature && (
+                    {values.digitalSignature.signature && (
                       <Flex justifyContent={'flex-end'}>
                         <Image
-                          src={formik.values.digitalSignature.signature}
+                          src={values.digitalSignature.signature}
                           alt="signature"
                           className="signature"
                           width="200px"

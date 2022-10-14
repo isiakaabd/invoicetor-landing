@@ -1,5 +1,5 @@
 import 'components/Organism/Editor/Editor.scss';
-import { useFormik } from 'formik';
+import { useFormikContext } from 'formik';
 import {
   Box,
   Stack,
@@ -16,30 +16,34 @@ import {
 import * as BiIcons from 'react-icons/bi';
 import * as RiIcons from 'react-icons/ri';
 
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 export default function InvoiceNotes({
-  notes,
   getNotes,
   resetForm,
   clientName,
   usersCompany,
   userName,
 }) {
-  const formik = useFormik({
-    initialValues: { notes },
-  });
-  useEffect(() => {
-    if (resetForm) {
-      formik.resetForm();
-    }
-  }, [resetForm, formik]);
+  const {
+    values: { notes },
+    setFieldValue,
+    handleChange,
+  } = useFormikContext();
+  // const formik = useFormik({
+  //   initialValues: { notes },
+  // });
+  // useEffect(() => {
+  //   if (resetForm) {
+  //     formik.resetForm();
+  //   }
+  // }, [resetForm, formik]);
 
-  useEffect(() => {
-    getNotes(formik.values.notes);
+  // useEffect(() => {
+  //   getNotes(formik.values.notes);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values]);
 
   const randomNotes = [
     {
@@ -68,7 +72,7 @@ export default function InvoiceNotes({
   const suggestNotes = () => {
     const randomNote =
       randomNotes[Math.floor(Math.random() * randomNotes.length)];
-    formik.setFieldValue('notes.note', randomNote.content);
+    setFieldValue('notes.note', randomNote.content);
   };
 
   return (
@@ -83,14 +87,14 @@ export default function InvoiceNotes({
           <Text mb="8px">Add a Note : </Text>
           <Flex>
             <Textarea
-              isDisabled={formik.values.notes.noteToggle ? true : false}
+              isDisabled={notes?.noteToggle ? true : false}
               size={'lg'}
               name="notes.note"
               placeholder="It was great doing business with you."
               bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
               color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              value={formik.values.notes.note}
-              onChange={formik.handleChange}
+              value={notes?.note}
+              onChange={handleChange}
             />
 
             <Menu>
@@ -105,24 +109,17 @@ export default function InvoiceNotes({
               <MenuList>
                 <MenuItem
                   icon={
-                    formik.values.notes.noteToggle ? (
-                      <BiIcons.BiHide />
-                    ) : (
-                      <BiIcons.BiShow />
-                    )
+                    notes?.noteToggle ? <BiIcons.BiHide /> : <BiIcons.BiShow />
                   }
                   onClick={e =>
-                    formik.setFieldValue(
-                      'notes.noteToggle',
-                      !formik.values.notes.noteToggle
-                    )
+                    setFieldValue('notes.noteToggle', !notes?.noteToggle)
                   }
                 >
-                  {formik.values.notes.noteToggle ? 'Show' : 'Hide'}
+                  {notes?.noteToggle ? 'Show' : 'Hide'}
                 </MenuItem>
                 <MenuItem icon={<RiIcons.RiMagicFill />} onClick={suggestNotes}>
                   Random Notes
-                </MenuItem>{' '}
+                </MenuItem>
               </MenuList>
             </Menu>
           </Flex>

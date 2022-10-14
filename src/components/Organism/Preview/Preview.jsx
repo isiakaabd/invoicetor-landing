@@ -135,9 +135,13 @@ export default function Preview() {
                   </Text>
                 </GridItem>
                 <GridItem colStart={4} colEnd={6} h="10">
-                  <Text align="end">{invoice.invoiceNumber}</Text>
-                  <Text align="end">{invoice.invoiceDate}</Text>
-                  <Text align="end">{invoice.dueDate}</Text>
+                  <Text align="end">
+                    {invoice.invoiceDataValues.invoiceNumber}
+                  </Text>
+                  <Text align="end">
+                    {invoice.invoiceDataValues.invoiceDate}
+                  </Text>
+                  <Text align="end">{invoice.invoiceDataValues.dueDate}</Text>
                 </GridItem>
               </Grid>
             </Box>

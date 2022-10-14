@@ -1,6 +1,6 @@
 import 'components/Organism/Editor/Editor.scss';
-import { useState, useEffect } from 'react';
-import { useFormik } from 'formik';
+import { useState } from 'react';
+import { ErrorMessage, useFormikContext } from 'formik';
 import {
   Box,
   Flex,
@@ -38,13 +38,14 @@ import {
   ModalCloseButton,
   useToast,
 } from '@chakra-ui/react';
-import CurrencyData from '../../CurrencyData/CurrencyData.json';
+import CurrencyData from 'components/Organism/Editor/CurrencyData/CurrencyData.json';
 
 import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
+import { TextError } from 'components/Pages/Form/TextError';
 
 export default function InvoiceItems({
-  invoiceItems,
+  // invoiceItems,
   tax,
   getItems,
   resetForm,
@@ -52,20 +53,20 @@ export default function InvoiceItems({
   const toast = useToast();
   const statuses = ['success', 'error', 'warning', 'info'];
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const formik = useFormik({
-    initialValues: { invoiceItems, tax },
-  });
+  // const formik = useFormik({
+  //   initialValues: { invoiceItems, tax },
+  // });
+  const { setFieldValue, touched, values, errors } = useFormikContext();
+  // useEffect(() => {
+  //   if (resetForm) {
+  //     formik.resetForm();
+  //   }
+  // }, [resetForm, formik]);
 
-  useEffect(() => {
-    if (resetForm) {
-      formik.resetForm();
-    }
-  }, [resetForm, formik]);
-
-  useEffect(() => {
-    getItems(formik.values);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values.invoiceItems, formik.values.tax]);
+  // useEffect(() => {
+  //   getItems(formik.values);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values.invoiceItems, formik.values.tax]);
 
   // aleart message
   const alertMessage = (message, status) => {
@@ -77,7 +78,13 @@ export default function InvoiceItems({
       position: 'bottom-right',
     });
   };
-
+  function isNumeric(str) {
+    if (typeof str != 'string') return false; // we only process strings!
+    return (
+      // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+      !isNaN(str) && !isNaN(parseFloat(str))
+    ); // ...and ensure strings of whitespace fail
+  }
   const customCurrency = ['US Dollar', 'Indian Rupee', 'Euro'];
   const [searchTerm, setSearchTerm] = useState('');
   const [currency, setCurrency] = useState('₹');
@@ -108,19 +115,22 @@ export default function InvoiceItems({
 
     // check if item is empty
     if (
-      currentItem.itemName === '' ||
-      currentItem.itemQuantity === '' ||
-      currentItem.itemPrice === ''
+      currentItem.itemName.trim() === '' ||
+      currentItem.itemQuantity.trim() === '' ||
+      currentItem.itemPrice.trim() === ''
     ) {
       alertMessage('Please fill all the fields', 'error');
       return;
-    } else if (currentItem.itemName === '') {
+    } else if (currentItem.itemName.trim() === '') {
       alertMessage('Please enter item name', 'error');
       return;
-    } else if (currentItem.itemQuantity === '') {
+    } else if (isNumeric(currentItem.itemName)) {
+      alertMessage('Please enter item name not number', 'error');
+      return;
+    } else if (currentItem.itemQuantity.trim() === '') {
       alertMessage('Please enter item quantity', 'error');
       return;
-    } else if (currentItem.itemPrice === '') {
+    } else if (currentItem.itemPrice.trim() === '') {
       alertMessage('Please enter item price', 'error');
       return;
     }
@@ -134,10 +144,7 @@ export default function InvoiceItems({
       itemTotal: currentItem.itemQuantity * currentItem.itemPrice,
     };
     // adding new item to formik state
-    formik.setFieldValue('invoiceItems', [
-      ...formik.values.invoiceItems,
-      newItem,
-    ]);
+    setFieldValue('items', [...values.items, newItem]);
 
     // resetting current item
     setCurrentItem({
@@ -153,7 +160,7 @@ export default function InvoiceItems({
 
   // save edit items to localstorage
   const saveEditItem = () => {
-    const newItems = invoiceItems.map((item, index) => {
+    const newItems = values?.items.map((item, index) => {
       if (index === editItem.editIndex) {
         return {
           itemName: editItem.editName,
@@ -166,7 +173,7 @@ export default function InvoiceItems({
       return item;
     });
 
-    formik.setFieldValue('invoiceItems', newItems);
+    setFieldValue('items', newItems);
     alertMessage('Item updated successfully', 'success');
     onClose();
   };
@@ -175,10 +182,10 @@ export default function InvoiceItems({
     onOpen();
     setEditItem({
       editIndex: index,
-      editName: formik.values.invoiceItems[index].itemName,
-      editQuantity: formik.values.invoiceItems[index].itemQuantity,
-      editPrice: formik.values.invoiceItems[index].itemPrice,
-      editCurrency: formik.values.invoiceItems[index].itemCurrency,
+      editName: values.items[index].itemName,
+      editQuantity: values.items[index].itemQuantity,
+      editPrice: values.items[index].itemPrice,
+      editCurrency: values.items[index].itemCurrency,
     });
   };
 
@@ -186,9 +193,9 @@ export default function InvoiceItems({
   /*Delete invoiceItems items from local storage starts */
 
   const removeInvoiceItem = index => {
-    const item = [...formik.values.invoiceItems];
+    const item = [...values.items];
     item.splice(index, 1);
-    formik.setFieldValue('invoiceItems', item);
+    setFieldValue('items', item);
     alertMessage('Item deleted successfully', 'success');
   };
 
@@ -341,10 +348,7 @@ export default function InvoiceItems({
                             ...currentItem,
                             itemCurrency: item.symbol,
                           });
-                          formik.setFieldValue(
-                            'invoiceItems.itemCurrency',
-                            item.symbol
-                          );
+                          setFieldValue('items.itemCurrency', item.symbol);
                           setSearchTerm('');
                         }}
                         rounded="lg"
@@ -371,10 +375,7 @@ export default function InvoiceItems({
                             ...currentItem,
                             itemCurrency: item.symbol,
                           });
-                          formik.setFieldValue(
-                            'invoiceItems.itemCurrency',
-                            item.symbol
-                          );
+                          setFieldValue('items.itemCurrency', item.symbol);
                           setSearchTerm('');
                         }}
                         rounded="lg"
@@ -410,6 +411,8 @@ export default function InvoiceItems({
             Add Item
           </Button>
         </Box>
+        {errors.name && touched.name && alert(errors.name)}
+        <ErrorMessage name="items" component={TextError} />
       </Stack>
       {/* invoiceItems Items End */}
       {/* invoiceItems Items List Starts */}
@@ -424,43 +427,42 @@ export default function InvoiceItems({
             </Tr>
           </Thead>
           <Tbody>
-            {formik.values.invoiceItems &&
-              formik.values.invoiceItems.map((item, index) => (
-                <Tr key={index}>
-                  <Td width={'20%'}>{item.itemName}</Td>
-                  <Td>{item.itemQuantity} </Td>
-                  <Td>
-                    {item.itemCurrency} {item.itemPrice}
-                  </Td>
-                  <Td>
-                    {item.itemCurrency} {item.itemTotal}
-                  </Td>
-                  <Menu>
-                    <MenuButton
-                      m={2}
-                      as={IconButton}
-                      aria-label="Options"
-                      icon={<RiIcons.RiMenu3Fill />}
-                      variant="outline"
-                    />
+            {values?.items?.map((item, index) => (
+              <Tr key={index}>
+                <Td width={'20%'}>{item.itemName}</Td>
+                <Td>{item.itemQuantity} </Td>
+                <Td>
+                  {item.itemCurrency} {item.itemPrice}
+                </Td>
+                <Td>
+                  {item.itemCurrency} {item.itemTotal}
+                </Td>
+                <Menu>
+                  <MenuButton
+                    m={2}
+                    as={IconButton}
+                    aria-label="Options"
+                    icon={<RiIcons.RiMenu3Fill />}
+                    variant="outline"
+                  />
 
-                    <MenuList>
-                      <MenuItem
-                        icon={<FaIcons.FaRegEdit />}
-                        onClick={() => EditInvoiceItem(index)}
-                      >
-                        Edit
-                      </MenuItem>{' '}
-                      <MenuItem
-                        icon={<RiIcons.RiDeleteBin3Line />}
-                        onClick={() => removeInvoiceItem(index)}
-                      >
-                        Delete
-                      </MenuItem>
-                    </MenuList>
-                  </Menu>
-                </Tr>
-              ))}
+                  <MenuList>
+                    <MenuItem
+                      icon={<FaIcons.FaRegEdit />}
+                      onClick={() => EditInvoiceItem(index)}
+                    >
+                      Edit
+                    </MenuItem>{' '}
+                    <MenuItem
+                      icon={<RiIcons.RiDeleteBin3Line />}
+                      onClick={() => removeInvoiceItem(index)}
+                    >
+                      Delete
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </Tr>
+            ))}
           </Tbody>
         </Table>
       </TableContainer>
@@ -572,7 +574,7 @@ export default function InvoiceItems({
         </ModalContent>
       </Modal>
       {/* invoiceItems Items List Ends */}
-      {formik.values.invoiceItems.length > 0 && (
+      {values?.items?.length > 0 && (
         <Stack my={10}>
           <Flex>
             <Spacer />
@@ -594,9 +596,9 @@ export default function InvoiceItems({
                         placeholder="Tax %"
                         bg={backgroundColor}
                         color={textColor}
-                        value={formik.values.tax}
+                        value={values.tax}
                         onChange={e => {
-                          formik.setFieldValue('tax', e.target.value);
+                          setFieldValue('tax', e.target.value);
                         }}
                       />
                       <InputRightAddon

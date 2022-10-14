@@ -1,33 +1,55 @@
 import 'components/Organism/Editor/Editor.scss';
-import { useFormik } from 'formik';
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Input,
-  Stack,
-  useToast,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import { Box, Stack, useToast } from '@chakra-ui/react';
+import { useFormikContext } from 'formik';
+import FormikControl from 'components/Pages/Form/FormikControl';
 
-import { useEffect } from 'react';
+export default function InvoiceDates({
+  dueDate,
+  invoiceDate,
+  invoiceNumber,
+  invoiceDataValues,
+  // getDates,
+  resetForm,
+}) {
+  // const formik = useFormik({
+  //   initialValues: {
+  //     invoiceDataValues,
+  //   },
+  // });
+  const { setFieldValue, values } = useFormikContext();
 
-export default function InvoiceDates({ invoiceDates, getDates, resetForm }) {
-  const formik = useFormik({
-    initialValues: { invoiceDates },
-  });
   const toast = useToast();
-  useEffect(() => {
-    getDates(formik.values.invoiceDates);
-    if (resetForm) {
-      formik.resetForm();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values]);
+  // useEffect(() => {
+  //   const { invoiceNumber, invoiceDate, dueDate } = formik?.values;
+  //   const data = {
+  //     invoiceNumber,
+  //     invoiceDate,
+  //     dueDate,
+  //   };
+
+  //   getDates(data);
+  //   if (resetForm) {
+  //     formik.resetForm();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values]);
+  // console.log(invoiceDates);
+
+  // useEffect(() => {
+  //   getDates(formik.values.invoiceDataValues);
+  //   if (resetForm) {
+  //     formik.resetForm();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values]);
+  // useEffect(() => {
+  //   getDates(formik.values.invoiceDataValues);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [formik.values.invoiceDataValues]);
 
   const handleDateChange = e => {
-    if (formik.values.invoiceDates[1] !== '') {
-      formik.setFieldValue('invoiceDates[2]', e.target.value);
+    if (values.invoiceDataValues.invoiceDate !== '') {
+      setFieldValue('invoiceDataValues.dueDate', e.target.value);
     } else {
       toast({
         status: 'error',
@@ -37,77 +59,57 @@ export default function InvoiceDates({ invoiceDates, getDates, resetForm }) {
         position: 'bottom-right',
       });
 
-      formik.setFieldValue('invoiceDates[2]', '');
+      // formik.setFieldValue('dueDate', '');
     }
   };
-
+  // const validationSchema = Yup.object({
+  //   clientName: Yup.string('Enter your First name')
+  //     .trim()
+  //     .required('client Name  is required'),
+  //   clientCompany: Yup.string('Enter client Company name')
+  //     .trim()
+  //     .required('client Company is required'),
+  // });
+  // console.log(formik.values.invoiceDates);
   // suppose the invoice date is cleared or changed  and the new invoice date selected is ahead of invoice due date, the useEffect runs
-  useEffect(() => {
-    if (formik.values.invoiceDates[1] > formik.values.invoiceDates[2]) {
-      formik.setFieldValue('invoiceDates[2]', '');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values.invoiceDates[1], formik.values.invoiceDates[2]]);
+  // useEffect(() => {
+  //   const { invoiceDate, dueDate } = invoiceDates;
+  //   if (invoiceDate > dueDate) {
+  //     formik.setFieldValue('dueDate', '');
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [invoiceDates.invoiceDate, invoiceDates.dueDate]);
 
   return (
-    <>
-      <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="20">
-        <Box>
-          <FormControl id="invoiceNumber">
-            <FormLabel>Invoice Number</FormLabel>
-            <Input
-              type="number"
-              min={0}
-              onKeyDown={e =>
-                ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
-              }
-              size={'lg'}
-              htmlSize={30}
-              placeholder="Invoice Number"
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              name="invoiceDates[0]"
-              onChange={formik.handleChange}
-              value={formik.values.invoiceDates[0]}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="invoiceDate">
-            <FormLabel>Invoice Date</FormLabel>
-            <Input
-              type="date"
-              size={'lg'}
-              htmlSize={30}
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              name="invoiceDates[1]"
-              onChange={formik.handleChange}
-              value={formik.values.invoiceDates[1]}
-            />
-          </FormControl>
-        </Box>
-        <Box>
-          <FormControl id="dueDate">
-            <FormLabel>Due Date</FormLabel>
-            <Input
-              type="date"
-              size={'lg'}
-              bg={useColorModeValue('gray.100', 'gray.700') || 'gray.200'}
-              color={useColorModeValue('gray.800', 'gray.300') || 'gray.800'}
-              name="invoiceDates[2]"
-              onChange={handleDateChange}
-              min={formik.values.invoiceDates[1]}
-              value={
-                formik.values.invoiceDates[1] &&
-                formik.values.invoiceDates[1] < formik.values.invoiceDates[2]
-                  ? formik.values.invoiceDates[2]
-                  : ''
-              }
-            />
-          </FormControl>
-        </Box>
-      </Stack>
-    </>
+    <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="20">
+      <Box>
+        <FormikControl
+          type="text"
+          placeholder="Invoice Number"
+          name="invoiceDataValues.invoiceNumber"
+          onKeyDown={e =>
+            ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()
+          }
+        />
+      </Box>
+      <Box>
+        <FormikControl
+          control="date"
+          type="date"
+          name="invoiceDataValues.invoiceDate"
+          placeholder="Invoice Date"
+        />
+      </Box>
+      <Box>
+        <FormikControl
+          type="date"
+          name="invoiceDataValues.dueDate"
+          placeholder="Due Date"
+          onChange={handleDateChange}
+          min={values.invoiceDate}
+          value={values?.invoiceDate < values?.dueDate ? values.dueDate : ''}
+        />
+      </Box>
+    </Stack>
   );
 }

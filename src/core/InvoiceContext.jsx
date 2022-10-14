@@ -31,9 +31,12 @@ export default function InvoiceProvider({ children }) {
           clientCompany: '',
         },
         items: [],
-        invoiceNumber: '',
-        invoiceDate: '',
-        dueDate: '',
+
+        invoiceDataValues: {
+          invoiceNumber: '',
+          invoiceDate: '',
+          dueDate: '',
+        },
         tax: 0,
 
         notes: {
@@ -52,7 +55,6 @@ export default function InvoiceProvider({ children }) {
         },
         backgroundColor: 'gray',
       };
-
   const [invoice, setInvoice] = useState({
     yourLogo: {
       image: invoiceData.yourLogo.image,
@@ -81,9 +83,12 @@ export default function InvoiceProvider({ children }) {
       clientCity: invoiceData.clientDetails.clientCity,
       clientWebsite: invoiceData.clientDetails.clientWebsite,
     },
-    invoiceNumber: invoiceData.invoiceNumber,
-    invoiceDate: invoiceData.invoiceDate,
-    dueDate: invoiceData.dueDate,
+    invoiceDataValues: {
+      invoiceNumber: invoiceData.invoiceDataValues.invoiceNumber,
+      invoiceDate: invoiceData.invoiceDataValues.invoiceDate,
+      dueDate: invoiceData.invoiceDataValues.dueDate,
+    },
+
     items: [...invoiceData.items],
 
     notes: {
@@ -107,6 +112,8 @@ export default function InvoiceProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('invoicetor', JSON.stringify(invoice));
   }, [invoice]);
+
+  // alert(JSON.parse(localStorage.getItem('invoicetor')));
 
   return (
     <InvoiceContext.Provider
