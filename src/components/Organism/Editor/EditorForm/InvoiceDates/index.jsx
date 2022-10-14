@@ -5,44 +5,12 @@ import FormikControl from 'components/Pages/Form/FormikControl';
 import { useEffect } from 'react';
 
 export default function InvoiceDates() {
-  // const formik = useFormik({
-  //   initialValues: {
-  //     invoiceDataValues,
-  //   },
-  // });
   const {
     setFieldValue,
     values: { invoiceDataValues },
   } = useFormikContext();
 
   const toast = useToast();
-  // useEffect(() => {
-  //   const { invoiceNumber, invoiceDate, dueDate } = formik?.values;
-  //   const data = {
-  //     invoiceNumber,
-  //     invoiceDate,
-  //     dueDate,
-  //   };
-
-  //   getDates(data);
-  //   if (resetForm) {
-  //     formik.resetForm();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [formik.values]);
-  // console.log(invoiceDates);
-
-  // useEffect(() => {
-  //   getDates(formik.values.invoiceDataValues);
-  //   if (resetForm) {
-  //     formik.resetForm();
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [formik.values]);
-  // useEffect(() => {
-  //   getDates(formik.values.invoiceDataValues);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [formik.values.invoiceDataValues]);
 
   const handleDateChange = e => {
     if (invoiceDataValues?.invoiceDate !== '') {
@@ -57,16 +25,7 @@ export default function InvoiceDates() {
       });
     }
   };
-  // const validationSchema = Yup.object({
-  //   clientName: Yup.string('Enter your First name')
-  //     .trim()
-  //     .required('client Name  is required'),
-  //   clientCompany: Yup.string('Enter client Company name')
-  //     .trim()
-  //     .required('client Company is required'),
-  // });
-  // console.log(formik.values.invoiceDates);
-  // suppose the invoice date is cleared or changed  and the new invoice date selected is ahead of invoice due date, the useEffect runs
+
   useEffect(() => {
     const { invoiceDate, dueDate } = invoiceDataValues;
     if (invoiceDate > dueDate || !invoiceDate) {
