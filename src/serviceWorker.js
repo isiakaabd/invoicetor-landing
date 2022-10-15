@@ -35,6 +35,7 @@ export function register(config) {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
       if (isLocalhost) {
+        console.log('this is localhost');
         // This is running on localhost. Let's check if a service worker still exists or not.
         checkValidServiceWorker(swUrl, config);
 
@@ -47,8 +48,10 @@ export function register(config) {
           );
         });
       } else {
+        console.log(config);
         // Is not localhost. Just register service worker
         registerValidSW(swUrl, config);
+        console.log(registerValidSW(swUrl, config));
       }
     });
   }

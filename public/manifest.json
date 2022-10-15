@@ -3,7 +3,7 @@
     "background_color": "#b89f5e",
     "display": "standalone",
     "scope": "/",
-    "start_url": "/",
+    "start_url": ".",
     "name": "Invoicetor",
     "short_name": "Invoicetor",
     "description": "Quickly and easily create beautiful invoices for your business.",
