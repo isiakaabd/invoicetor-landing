@@ -19,7 +19,7 @@ import DigitalSignature from './DigitalSignature';
 export default function EditorForm() {
   const toast = useToast();
   const statuses = ['success', 'error', 'warning', 'info'];
-  // const { handleSubmit } = useFormikContext();
+  // const { handleSubmit, values } = useFormikContext();
   // aleart message
   const alertMessage = (message, status) => {
     toast({
@@ -84,7 +84,7 @@ export default function EditorForm() {
         // check if the user is on the invoice page or not
         if (window.location.pathname === '/one-time-editor') {
           e.preventDefault();
-          // handleSubmit();
+          handleFormSubmit();
         }
       }
 
@@ -162,83 +162,58 @@ export default function EditorForm() {
 
   const validationSchema = Yup.object({
     clientDetails: Yup.object().shape({
-      clientName: Yup.string('Enter your First name')
+      clientName: Yup.string('Enter Your First Name')
         .trim()
-        .required('client Name  is required'),
-      clientCompany: Yup.string('Enter client Company name')
+        .required('Client Name  Is Required'),
+      clientCompany: Yup.string('Enter Your Client Company Name').trim(),
+      clientAddress: Yup.string('Enter Your client Address Name').trim(),
+      clientCity: Yup.string('Enter Your Client City Name').trim(),
+      clientWebsite: Yup.string('Enter Your Client Comapny URL').trim(),
+      // .url('Enter Correct Client URL'),
+      // .required('Client Website URL Is Required'),
+      clientEmail: Yup.string('Enter Your Client Email Address')
         .trim()
-        .required('client Company is required'),
-      clientAddress: Yup.string('Enter client Address name')
-        .trim()
-        .required('client Address is required'),
-
-      clientCity: Yup.string('Enter your City name')
-        .trim()
-        .required('City Name is required'),
-      clientWebsite: Yup.string('Enter your Comapny URL')
-        .trim()
-        .url('Enter correct URL')
-        .required('client Website URL is required'),
-      clientEmail: Yup.string('Enter client Email Address')
-        .trim()
-        .email('Enter Valid email')
-        .required('client Email is required'),
-      clientPhone: Yup.number('Enter client Phone Number')
-        .typeError('Must be a valid phone number')
-        .required('client Phone Number is required'),
+        .email('Enter Client Valid Email')
+        .required('Client Email Is Required'),
+      clientPhone: Yup.number('Enter Client Phone Number').typeError(
+        'Must Be a Valid Phone Number'
+      ),
     }),
     yourDetails: Yup.object().shape({
-      yourName: Yup.string('Enter your Name')
+      yourName: Yup.string('Enter Your Name')
         .trim()
-        .required('Name  is required'),
-      yourCompany: Yup.string('Enter your Company name')
+        .required('Name  Is Required'),
+      yourCompany: Yup.string('Enter Your Company Name')
         .trim()
-        .required(' Company name is required'),
-      yourAddress: Yup.string('Enter your Address')
+        .required('Company Name Is Required'),
+      yourAddress: Yup.string('Enter Your Address').trim(),
+      yourCity: Yup.string('Enter Your City Name').trim(),
+      yourBank: Yup.string('Enter Your Bank Name').trim(),
+      yourBankBranch: Yup.string('Enter Your Bank Branch').trim(),
+      yourAccountNumber: Yup.string('Enter Your Account Number').trim(),
+      yourWebsite: Yup.string('Enter Your Company URL')
         .trim()
-        .required('Address is required'),
-
-      yourCity: Yup.string('Enter your City name')
+        .url('Enter correct URL'),
+      yourEmail: Yup.string('Enter Your Email Address')
         .trim()
-        .required('City Name is required'),
-      yourBank: Yup.string('Enter your Bank name')
-        .trim()
-        .required('Bank Name is required'),
-      yourBankBranch: Yup.string('Enter your Bank branch')
-        .trim()
-        .required('Bank branch is required'),
-      yourAccountNumber: Yup.string('Enter your Account Number')
-        .trim()
-        .required('Account number is required'),
-      yourWebsite: Yup.string('Enter your Company URL')
-        .trim()
-        .url('Enter correct URL')
-        .required('Website URL is required'),
-      yourEmail: Yup.string('Enter your Email Address')
-        .trim()
-        .email('Enter Valid email')
-        .required('Email is required'),
-      yourPhone: Yup.number('Enter your Phone Number')
-        .typeError('Must be a valid phone number')
-        .required(' Phone Number is required'),
+        .email('Enter Valid Email'),
+      yourPhone: Yup.number('Enter Your Phone Number').typeError(
+        'Must Be a Valid Phone Number'
+      ),
     }),
     invoiceDataValues: Yup.object().shape({
-      invoiceNumber: Yup.number('Enter invoice number').required(
-        'Invoice number  is required'
-      ),
-      invoiceDate: Yup.date('Enter  invoice date').required(
-        ' Invoice date is required'
-      ),
-      dueDate: Yup.date('Enter invoice due date').required('Date is required'),
+      invoiceNumber: Yup.number('Enter Invoice Number'),
+      invoiceDate: Yup.date('Enter  Invoice Date'),
+      dueDate: Yup.date('Enter invoice due date'),
     }),
     digitalSignature: Yup.object().shape({
-      sealColor: Yup.string('Enter invoice number'),
-      signatureSize: Yup.string('Enter  signature size'),
-      signature: Yup.string('Enter  signature size').required(
-        'signature is required'
-      ),
+      sealColor: Yup.string('Enter Invoice Number'),
+      signatureSize: Yup.string('Enter  Signature Size'),
+      signature: Yup.string('Enter  Signature Size'),
     }),
-    items: Yup.array().min(1, 'at least 1 items').required('required'),
+    items: Yup.array()
+      .min(1, 'At least 1 Item Should Be Added')
+      .required('Add Atleast 1 Item').required,
   });
 
   return (
