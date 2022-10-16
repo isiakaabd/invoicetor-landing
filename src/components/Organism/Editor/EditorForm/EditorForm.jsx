@@ -1,12 +1,9 @@
-import { useContext, useEffect } from 'react';
-import { Form, Formik } from 'formik';
+import { memo, useContext, useEffect } from 'react';
+import { Form, Formik, useFormik } from 'formik';
 import { Box, Flex, Button, Spacer, useToast } from '@chakra-ui/react';
-
 import * as Yup from 'yup';
 import { InvoiceContext } from 'core/InvoiceContext';
-
 import * as RiIcons from 'react-icons/ri';
-
 import UserDetails from './UserDetails';
 import ClientDetails from './ClientDetails';
 import InvoiceItems from './InvoiceItems';
@@ -15,13 +12,14 @@ import InvoiceTerms from './InvoiceTerms';
 import InvoiceDates from './InvoiceDates';
 import InvoiceImage from './InvoiceImage';
 import DigitalSignature from './DigitalSignature';
+import { useCallback } from 'react';
 
-export default function EditorForm() {
+const EditorForm = () => {
   const toast = useToast();
   const statuses = ['success', 'error', 'warning', 'info'];
-  // const { handleSubmit } = useFormikContext();
+
   // aleart message
-  const alertMessage = (message, status) => {
+  const alertMessage = useCallback((message, status) => {
     toast({
       status: statuses.includes(status) ? status : 'info',
       title: message,
@@ -29,20 +27,13 @@ export default function EditorForm() {
       isClosable: true,
       position: 'bottom-right',
     });
-  };
+    // eslint-disable-next-line
+  }, []);
+  const { invoice, setInvoice } = useContext(InvoiceContext);
 
   // getting the context from the provider
-  const { invoice, setInvoice } = useContext(InvoiceContext);
-  // const formik = useFormik({
-  //   initialValues: { invoice },
-  //   // onSubmit: values => {
-  //   //   setInvoice(values.invoice);
-  //   //   localStorage.setItem('invoicetor', JSON.stringify(values.invoice));
-  //   //   alertMessage('Invoice saved successfully', 'success');
-  //   // },
-  // });
-  // alert(JSON.stringify(invoice.clientDetails.clientEmail));
-  const handleFormSubmit = values => {
+
+  const handleFormSubmit = useCallback(values => {
     const {
       yourDetails,
       backgroundColor,
@@ -69,10 +60,32 @@ export default function EditorForm() {
       digitalSignature,
       backgroundColor,
     };
-    setInvoice(data);
+    setInvoice(values);
     localStorage.setItem('invoicetor', JSON.stringify(data));
     alertMessage('Invoice saved successfully', 'success');
-  };
+    // eslint-disable-next-line
+  }, []);
+  const { handleSubmit, values } = useFormik({
+    initialValues: { invoice },
+  });
+
+  // show  last error using toast
+  const showError = useCallback(errors => {
+    if (Object.keys(errors).length === 0) return;
+    else {
+      const arr = Object.values(errors);
+      const lastError = arr[arr.length - 1];
+
+      if (typeof lastError === 'object') {
+        const y = Object.values(lastError);
+        alertMessage(y[y.length - 1], 'error');
+      } else {
+        alertMessage(lastError, 'error');
+      }
+    }
+
+    //  eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('invoicetor', JSON.stringify(invoice));
@@ -85,6 +98,7 @@ export default function EditorForm() {
         if (window.location.pathname === '/one-time-editor') {
           e.preventDefault();
           // handleSubmit();
+          console.log(values);
         }
       }
 
@@ -101,12 +115,12 @@ export default function EditorForm() {
       document.removeEventListener('keydown', handler);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [invoice]);
+  }, [invoice, handleSubmit]);
 
   // Upload Image in localstorage ends
 
   // Clear All Data
-  const clearAllData = () => {
+  const clearAllData = useCallback(() => {
     setInvoice({
       yourLogo: {
         image: '',
@@ -158,164 +172,149 @@ export default function EditorForm() {
 
     localStorage.removeItem('invoicetor');
     alertMessage('Invoice cleared successfully', 'success');
-  };
+    //eslint-disable-next-line
+  }, []);
 
   const validationSchema = Yup.object({
     clientDetails: Yup.object().shape({
-      clientName: Yup.string('Enter your First name')
+      clientName: Yup.string('Enter Your First Name')
+        .strict()
+        .matches(/^[A-Za-z]+$/, 'Name Should Always Be In Letters')
         .trim()
-        .required('client Name  is required'),
-      clientCompany: Yup.string('Enter client Company name')
+        .required('Client Name  Is Required'),
+      clientCompany: Yup.string('Enter Your Client Company Name').trim(),
+      clientAddress: Yup.string('Enter Your client Address Name').trim(),
+      clientCity: Yup.string('Enter Your Client City Name').trim(),
+      clientWebsite: Yup.string('Enter Your Client Comapny URL').trim(),
+      clientEmail: Yup.string('Enter Your Client Email Address')
         .trim()
-        .required('client Company is required'),
-      clientAddress: Yup.string('Enter client Address name')
-        .trim()
-        .required('client Address is required'),
-
-      clientCity: Yup.string('Enter your City name')
-        .trim()
-        .required('City Name is required'),
-      clientWebsite: Yup.string('Enter your Comapny URL')
-        .trim()
-        .url('Enter correct URL')
-        .required('client Website URL is required'),
-      clientEmail: Yup.string('Enter client Email Address')
-        .trim()
-        .email('Enter Valid email')
-        .required('client Email is required'),
-      clientPhone: Yup.number('Enter client Phone Number')
-        .typeError('Must be a valid phone number')
-        .required('client Phone Number is required'),
+        .email('Enter Client Valid Email')
+        .required('Client Email Is Required'),
+      clientPhone: Yup.number('Enter Client Phone Number').typeError(
+        'Must Be a Valid Phone Number'
+      ),
     }),
     yourDetails: Yup.object().shape({
-      yourName: Yup.string('Enter your Name')
+      yourName: Yup.string('Enter Your Name')
         .trim()
-        .required('Name  is required'),
-      yourCompany: Yup.string('Enter your Company name')
+        .matches(/^[A-Za-z]+$/, 'Name Should Always Be In Letters')
+        .required('Your Name  Is Required'),
+      yourCompany: Yup.string('Enter Your Company Name').trim(),
+      // .required('Company Name Is Required'),
+      yourAddress: Yup.string('Enter Your Address').trim(),
+      yourCity: Yup.string('Enter Your City Name').trim(),
+      yourBank: Yup.string('Enter Your Bank Name').trim(),
+      yourBankBranch: Yup.string('Enter Your Bank Branch').trim(),
+      yourAccountNumber: Yup.string('Enter Your Account Number').trim(),
+      yourWebsite: Yup.string('Enter Your Company URL')
         .trim()
-        .required(' Company name is required'),
-      yourAddress: Yup.string('Enter your Address')
+        .url('Enter correct URL'),
+      yourEmail: Yup.string('Enter Your Email Address')
         .trim()
-        .required('Address is required'),
-
-      yourCity: Yup.string('Enter your City name')
-        .trim()
-        .required('City Name is required'),
-      yourBank: Yup.string('Enter your Bank name')
-        .trim()
-        .required('Bank Name is required'),
-      yourBankBranch: Yup.string('Enter your Bank branch')
-        .trim()
-        .required('Bank branch is required'),
-      yourAccountNumber: Yup.string('Enter your Account Number')
-        .trim()
-        .required('Account number is required'),
-      yourWebsite: Yup.string('Enter your Company URL')
-        .trim()
-        .url('Enter correct URL')
-        .required('Website URL is required'),
-      yourEmail: Yup.string('Enter your Email Address')
-        .trim()
-        .email('Enter Valid email')
-        .required('Email is required'),
-      yourPhone: Yup.number('Enter your Phone Number')
-        .typeError('Must be a valid phone number')
-        .required(' Phone Number is required'),
+        .email('Enter Valid Email')
+        .required('Your Email Is Required'),
+      yourPhone: Yup.number('Enter Your Phone Number').typeError(
+        'Must Be a Valid Phone Number'
+      ),
     }),
     invoiceDataValues: Yup.object().shape({
-      invoiceNumber: Yup.number('Enter invoice number').required(
-        'Invoice number  is required'
+      invoiceNumber: Yup.number('Enter Invoice Number').typeError(
+        'Must be a Number'
       ),
-      invoiceDate: Yup.date('Enter  invoice date').required(
-        ' Invoice date is required'
+      // invoiceDate: Yup.date('Enter  Invoice Date'),
+      invoiceDate: Yup.date().typeError('Invalid Started date'),
+
+      dueDate: Yup.date().min(
+        Yup.ref('invoiceDate'),
+        'Due Date Cannot Be Before Invoice Date'
       ),
-      dueDate: Yup.date('Enter invoice due date').required('Date is required'),
     }),
     digitalSignature: Yup.object().shape({
-      sealColor: Yup.string('Enter invoice number'),
-      signatureSize: Yup.string('Enter  signature size'),
-      signature: Yup.string('Enter  signature size').required(
-        'signature is required'
-      ),
+      sealColor: Yup.string('Enter Invoice Number'),
+      signatureSize: Yup.string('Enter  Signature Size'),
+      signature: Yup.string('Enter  Signature Size'),
     }),
-    items: Yup.array().min(1, 'at least 1 items').required('required'),
+    items: Yup.array()
+      .min(1, 'At least 1 Item Should Be Added')
+      .required('Add Atleast 1 Item'),
   });
 
   return (
-    <>
-      <Formik
-        validationSchema={validationSchema}
-        onSubmit={handleFormSubmit}
-        initialValues={invoice}
-        enableReinitialize={true}
-      >
-        {({ handleSubmit, dirty, values, isValid }) => {
-          console.log(values);
-          return (
-            <Form
-              onSubmit={handleSubmit}
-              id="form"
-              noValidate
-              style={{ width: '100%', height: '100%' }}
-            >
-              <InvoiceImage alertMessage={alertMessage} />
-              <UserDetails />
-              <ClientDetails />
-              <InvoiceDates />
-              {/* Invoice Number And Dates End */}
-              <InvoiceItems alertMessage={alertMessage} />
-              <InvoiceNotes />
-              <InvoiceTerms />
-              <DigitalSignature alertMessage={alertMessage} />
-              {/* Save Button */}
-              <Flex>
-                <Box mt={8}>
-                  <Button
-                    type="submit"
-                    _focus={{
-                      outline: 'none',
-                    }}
-                    disabled={!isValid || !dirty}
-                    fontWeight={600}
-                    color={'white'}
-                    bg={'purple.400'}
-                    borderRadius={'lg'}
-                    href={'#'}
-                    _hover={{
-                      bg: 'purple.700',
-                    }}
-                    rightIcon={<RiIcons.RiSaveLine />}
-                  >
-                    Save
-                  </Button>
-                </Box>
-                <Spacer />
-                <Box mt={8}>
-                  <Button
-                    _focus={{
-                      outline: 'none',
-                    }}
-                    fontWeight={600}
-                    color={'black'}
-                    bg={'white'}
-                    borderRadius={'lg'}
-                    href={'#'}
-                    _hover={{
-                      bg: 'whiteAlpha.800',
-                    }}
-                    type="reset"
-                    onClick={clearAllData}
-                    variant="outline"
-                    rightIcon={<RiIcons.RiDeleteBin2Line />}
-                  >
-                    Clear All
-                  </Button>
-                </Box>
-              </Flex>
-            </Form>
-          );
-        }}
-      </Formik>
-    </>
+    <Formik
+      validationSchema={validationSchema}
+      initialValues={invoice}
+      onSubmit={handleFormSubmit}
+      enableReinitialize={true}
+      validateOnMount
+    >
+      {({ handleSubmit, errors }) => {
+        return (
+          <Form
+            onSubmit={handleSubmit}
+            id="form"
+            noValidate
+            style={{ width: '100%', height: '100%' }}
+          >
+            <InvoiceImage alertMessage={alertMessage} />
+            <UserDetails />
+            <ClientDetails />
+            <InvoiceDates alertMessage={alertMessage} />
+            {/* Invoice Number And Dates End */}
+            <InvoiceItems alertMessage={alertMessage} />
+            <InvoiceNotes />
+            <InvoiceTerms />
+            <DigitalSignature alertMessage={alertMessage} />
+            {/* Save Button */}
+            <Flex>
+              <Box mt={8}>
+                <Button
+                  type="submit"
+                  _focus={{
+                    outline: 'none',
+                  }}
+                  // disabled={!isValid || !dirty}
+                  fontWeight={600}
+                  color={'white'}
+                  onClick={() => showError(errors)}
+                  bg={'purple.400'}
+                  borderRadius={'lg'}
+                  href={'#'}
+                  _hover={{
+                    bg: 'purple.700',
+                  }}
+                  rightIcon={<RiIcons.RiSaveLine />}
+                >
+                  Save
+                </Button>
+              </Box>
+              <Spacer />
+              <Box mt={8}>
+                <Button
+                  _focus={{
+                    outline: 'none',
+                  }}
+                  fontWeight={600}
+                  color={'black'}
+                  bg={'white'}
+                  borderRadius={'lg'}
+                  href={'#'}
+                  _hover={{
+                    bg: 'whiteAlpha.800',
+                  }}
+                  type="reset"
+                  onClick={clearAllData}
+                  variant="outline"
+                  rightIcon={<RiIcons.RiDeleteBin2Line />}
+                >
+                  Clear All
+                </Button>
+              </Box>
+            </Flex>
+          </Form>
+        );
+      }}
+    </Formik>
   );
-}
+};
+
+export default memo(EditorForm);

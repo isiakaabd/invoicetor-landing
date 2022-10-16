@@ -24,8 +24,9 @@ import SkeletonLoading from './SkeletonLoading';
 
 export default function Preview() {
   const { invoice } = useContext(InvoiceContext);
-  const invoiceItems = invoice.items;
-  const subTotal = invoiceItems.reduce((acc, item) => {
+
+  const invoiceItems = invoice?.items;
+  const subTotal = invoiceItems?.reduce((acc, item) => {
     return acc + item.itemQuantity * item.itemPrice;
   }, 0);
 
@@ -124,7 +125,7 @@ export default function Preview() {
                     align="start"
                     color={invoice?.backgroundColor + '.400'}
                   >
-                    Invoice Date :{' '}
+                    Invoice Date :
                   </Text>{' '}
                   <Text
                     fontWeight={'bold'}
@@ -136,12 +137,12 @@ export default function Preview() {
                 </GridItem>
                 <GridItem colStart={4} colEnd={6} h="10">
                   <Text align="end">
-                    {invoice.invoiceDataValues.invoiceNumber}
+                    {invoice?.invoiceDataValues?.invoiceNumber}
                   </Text>
                   <Text align="end">
-                    {invoice.invoiceDataValues.invoiceDate}
+                    {invoice?.invoiceDataValues?.invoiceDate}
                   </Text>
-                  <Text align="end">{invoice.invoiceDataValues.dueDate}</Text>
+                  <Text align="end">{invoice?.invoiceDataValues?.dueDate}</Text>
                 </GridItem>
               </Grid>
             </Box>

@@ -28,8 +28,9 @@ import {
 import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
 import * as MdIcons from 'react-icons/md';
+import { memo } from 'react';
 
-export default function InvoiceImage({ alertMessage }) {
+const InvoiceImage = ({ alertMessage }) => {
   const [sliderValue, setSliderValue] = useState('150');
   const [isOpenPop, setIsOpenPop] = useState(false);
   const open = () => setIsOpenPop(!isOpenPop);
@@ -39,7 +40,6 @@ export default function InvoiceImage({ alertMessage }) {
     setFieldValue,
     values: { yourLogo },
   } = useFormikContext();
-  // // aleart message
 
   const getBase64 = file => {
     return new Promise((resolve, reject) => {
@@ -206,4 +206,6 @@ export default function InvoiceImage({ alertMessage }) {
       </Stack>
     </>
   );
-}
+};
+
+export default memo(InvoiceImage);

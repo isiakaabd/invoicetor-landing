@@ -1,5 +1,5 @@
 import 'components/Organism/Editor/Editor.scss';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ErrorMessage, useFormikContext } from 'formik';
 import {
   Box,
@@ -43,33 +43,16 @@ import CurrencyData from 'components/Organism/Editor/CurrencyData/CurrencyData.j
 import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
 import { TextError } from 'components/Pages/Form/TextError';
+import { memo } from 'react';
 
-export default function InvoiceItems({
-  // invoiceItems,
-  tax,
-  getItems,
-  resetForm,
-}) {
+const InvoiceItems = () => {
   const toast = useToast();
   const statuses = ['success', 'error', 'warning', 'info'];
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // const formik = useFormik({
-  //   initialValues: { invoiceItems, tax },
-  // });
-  const { setFieldValue, touched, values, errors } = useFormikContext();
-  // useEffect(() => {
-  //   if (resetForm) {
-  //     formik.resetForm();
-  //   }
-  // }, [resetForm, formik]);
-
-  // useEffect(() => {
-  //   getItems(formik.values);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [formik.values.invoiceItems, formik.values.tax]);
+  const { setFieldValue, values } = useFormikContext();
 
   // aleart message
-  const alertMessage = (message, status) => {
+  const alertMessage = useCallback((message, status) => {
     toast({
       status: statuses.includes(status) ? status : 'info',
       title: message,
@@ -77,7 +60,8 @@ export default function InvoiceItems({
       isClosable: true,
       position: 'bottom-right',
     });
-  };
+    // eslint-disable-next-line
+  }, []);
   function isNumeric(str) {
     if (typeof str != 'string') return false; // we only process strings!
     return (
@@ -157,9 +141,10 @@ export default function InvoiceItems({
 
     alertMessage('Item added successfully', 'success');
   };
+  // eslint-disable-next-line
 
   // save edit items to localstorage
-  const saveEditItem = () => {
+  const saveEditItem = useCallback(() => {
     const newItems = values?.items.map((item, index) => {
       if (index === editItem.editIndex) {
         return {
@@ -176,7 +161,8 @@ export default function InvoiceItems({
     setFieldValue('items', newItems);
     alertMessage('Item updated successfully', 'success');
     onClose();
-  };
+    // eslint-disable-next-line
+  }, [editItem]);
   /* Edit invoiceItems Item Starts */
   const EditInvoiceItem = index => {
     onOpen();
@@ -206,11 +192,10 @@ export default function InvoiceItems({
     useColorModeValue('gray.100', 'gray.700') || 'gray.200';
 
   const textColor = useColorModeValue('gray.800', 'gray.200') || 'gray.800';
-
   return (
     <>
       {/* invoiceItems Items Starts */}
-      <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="20">
+      <Stack direction={{ base: 'column', md: 'row' }} spacing={8} mt="20">
         <Box>
           <FormControl id="itemName">
             <FormLabel>Item Name</FormLabel>
@@ -411,9 +396,10 @@ export default function InvoiceItems({
             Add Item
           </Button>
         </Box>
-        {errors.name && touched.name && alert(errors.name)}
-        <ErrorMessage name="items" component={TextError} />
       </Stack>
+      <div className="pt-2">
+        <ErrorMessage name="items" component={TextError} />
+      </div>
       {/* invoiceItems Items End */}
       {/* invoiceItems Items List Starts */}
       <TableContainer mt="20" spacing={8} scrollBehavior="smooth">
@@ -616,4 +602,5 @@ export default function InvoiceItems({
       )}
     </>
   );
-}
+};
+export default memo(InvoiceItems);

@@ -27,17 +27,15 @@ import {
 import * as FaIcons from 'react-icons/fa';
 import * as RiIcons from 'react-icons/ri';
 import * as BiIcons from 'react-icons/bi';
+import { memo } from 'react';
 
-export default function DigitalSignature({
-  digitalSignature,
-  registrationNumber,
+const DigitalSignature = ({
   yourName,
   yourCompany,
   invoiceDate,
-  getDigitalSignature,
-  resetForm,
+
   alertMessage,
-}) {
+}) => {
   const {
     isOpen: isOpenDigitalModal,
     onOpen: onOpenDigitalModal,
@@ -87,7 +85,6 @@ export default function DigitalSignature({
   const saveDigitalSignature = () => {
     alertMessage('Digital Signature Saved', 'success');
   };
-  // upload signature in localstorage ends
 
   return (
     <>
@@ -257,7 +254,7 @@ export default function DigitalSignature({
                       Upload Signature
                     </Button>
                     <Spacer />
-                    {values.digitalSignature.signature && (
+                    {values?.digitalSignature?.signature && (
                       <IconButton
                         variant="solid"
                         bg={'red.400'}
@@ -325,7 +322,7 @@ export default function DigitalSignature({
                     rounded={'lg'}
                     mx={2}
                     icon={
-                      values.digitalSignature.signatureToggle ? (
+                      values?.digitalSignature?.signatureToggle ? (
                         <BiIcons.BiShow />
                       ) : (
                         <BiIcons.BiHide />
@@ -334,30 +331,30 @@ export default function DigitalSignature({
                     onClick={() => {
                       setFieldValue(
                         'digitalSignature.signatureToggle',
-                        !values.digitalSignature.signatureToggle
+                        !values?.digitalSignature?.signatureToggle
                       );
                     }}
                   />
                 </Flex>
 
-                {values.digitalSignature.signatureToggle && (
+                {values?.digitalSignature?.signatureToggle && (
                   <Stack my={'3rem'}>
                     <Box
                       className="stamp is-nope"
                       borderWidth="0.5rem"
                       borderStyle="double"
                       borderRadius="10px"
-                      color={values.digitalSignature?.sealColor || 'red.400'}
-                      borderColor={values.digitalSignature.sealColor}
+                      color={values?.digitalSignature?.sealColor || 'red.400'}
+                      borderColor={values?.digitalSignature?.sealColor}
                     >
                       {yourCompany ? yourCompany : 'Your Company Name'} <br />{' '}
                       Reg. No :{values.registrationNumber}
                     </Box>
 
-                    {values.digitalSignature.signature && (
+                    {values?.digitalSignature?.signature && (
                       <Flex justifyContent={'flex-end'}>
                         <Image
-                          src={values.digitalSignature.signature}
+                          src={values?.digitalSignature?.signature}
                           alt="signature"
                           className="signature"
                           width="200px"
@@ -408,4 +405,6 @@ export default function DigitalSignature({
       {/* Invoice Digital Signature End */}
     </>
   );
-}
+};
+
+export default memo(DigitalSignature);

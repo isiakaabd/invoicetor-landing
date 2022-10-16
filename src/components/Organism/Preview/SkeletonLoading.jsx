@@ -39,8 +39,8 @@ function SkeletonLoading() {
       <Stack
         style={{
           pageBreakAfter:
-            invoice.items.length > 3 &&
-            !invoice.notes.noteToggle &&
+            invoice?.items?.length > 3 &&
+            !invoice?.notes.noteToggle &&
             !invoice.terms.termsToggle
               ? 'always'
               : 'auto',
@@ -217,8 +217,8 @@ function SkeletonLoading() {
             borderWidth="0.5rem"
             borderStyle="double"
             borderRadius="10px"
-            color={invoice.digitalSignature.sealColor}
-            borderColor={invoice.digitalSignature.sealColor}
+            color={invoice?.digitalSignature?.sealColor}
+            borderColor={invoice?.digitalSignature?.sealColor}
           >
             <SkeletonText mt="2" noOfLines={2} spacing="4">
               <p>Sample company name</p>

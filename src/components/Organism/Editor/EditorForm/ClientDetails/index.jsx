@@ -1,59 +1,10 @@
 import 'components/Organism/Editor/Editor.scss';
 
 import { Box, Stack } from '@chakra-ui/react';
-// import * as Yup from 'yup';
 import FormikControl from 'components/Pages/Form/FormikControl';
+import { memo } from 'react';
 
-// import { useEffect } from 'react';
-
-export default function ClientDetails({
-  clientDetails,
-  getClientDetails,
-  resetForm,
-}) {
-  // const formik = useFormik({
-  //   initialValues: { clientDetails },
-  // });
-
-  // useEffect(() => {
-  //   if (resetForm) {
-  //     formik.resetForm();
-  //   }
-  // }, [resetForm, formik]);
-
-  // useEffect(() => {
-  //   getClientDetails(formik.values.clientDetails);
-  //   console.log(formik.values);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [formik.values.clientDetails]);
-  // const validationSchema = Yup.object({
-  //   clientName: Yup.string('Enter your First name')
-  //     .trim()
-  //     .required('client Name  is required'),
-  //   clientCompany: Yup.string('Enter client Company name')
-  //     .trim()
-  //     .required('client Company is required'),
-  //   clientAddress: Yup.string('Enter client Address name')
-  //     .trim()
-  //     .required('client Address is required'),
-
-  //   clientCity: Yup.string('Enter your City name')
-  //     .trim()
-  //     .required('City Name is required'),
-  //   clientWebsite: Yup.string('Enter your Comapny URL')
-  //     .trim()
-  //     .url('Enter correct URL')
-  //     .required('client Website URL is required'),
-  //   clientEmail: Yup.string('Enter client Email Address')
-  //     .trim()
-  //     .email('Enter Valid email')
-  //     .required('client Email is required'),
-  //   clientPhone: Yup.number('Enter client Phone Number')
-  //     .typeError('Must be a valid phone number')
-  //     .required('client Phone Number is required'),
-  // });
-  // console.log(formik.values);
-
+const ClientDetails = () => {
   return (
     <>
       <Stack direction={{ base: 'column', md: 'row' }} spacing={8} mt="20">
@@ -114,4 +65,6 @@ export default function ClientDetails({
       </Stack>
     </>
   );
-}
+};
+
+export default memo(ClientDetails);

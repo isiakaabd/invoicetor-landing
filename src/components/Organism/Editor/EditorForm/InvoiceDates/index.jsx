@@ -1,39 +1,9 @@
 import 'components/Organism/Editor/Editor.scss';
-import { Box, Stack, useToast } from '@chakra-ui/react';
-import { useFormikContext } from 'formik';
+import { Box, Stack } from '@chakra-ui/react';
 import FormikControl from 'components/Pages/Form/FormikControl';
-import { useEffect } from 'react';
+import { memo } from 'react';
 
-export default function InvoiceDates() {
-  const {
-    setFieldValue,
-    values: { invoiceDataValues },
-  } = useFormikContext();
-
-  const toast = useToast();
-
-  const handleDateChange = e => {
-    if (invoiceDataValues?.invoiceDate !== '') {
-      setFieldValue('invoiceDataValues.dueDate', e.target.value);
-    } else {
-      toast({
-        status: 'error',
-        title: 'Select an invoice Date',
-        duration: 2000,
-        isClosable: true,
-        position: 'bottom-right',
-      });
-    }
-  };
-
-  useEffect(() => {
-    const { invoiceDate, dueDate } = invoiceDataValues;
-    if (invoiceDate > dueDate || !invoiceDate) {
-      setFieldValue('invoiceDataValues.dueDate', '');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [invoiceDataValues?.invoiceDate, invoiceDataValues?.dueDate]);
-
+const InvoiceDates = () => {
   return (
     <Stack direction={{ base: 'column', md: 'row' }} spacing={8} my="20">
       <Box>
@@ -59,11 +29,9 @@ export default function InvoiceDates() {
           type="date"
           name="invoiceDataValues.dueDate"
           placeholder="Due Date"
-          onChange={handleDateChange}
-          min={invoiceDataValues.invoiceDate}
-          value={invoiceDataValues.invoiceDate ? invoiceDataValues.dueDate : ''}
         />
       </Box>
     </Stack>
   );
-}
+};
+export default memo(InvoiceDates);
