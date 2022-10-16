@@ -4,10 +4,8 @@ import {
   Input,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { Field, ErrorMessage, FastField } from 'formik';
+import { Field, ErrorMessage } from 'formik';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
-import { memo } from 'react';
 import { TextError } from './TextError';
 
 const C = ({ type, name, placeholder, size, ...rest }) => {
@@ -38,7 +36,7 @@ const Inputs = props => {
     <>
       <FormControl id={name}>
         <FormLabel>{placeholder}</FormLabel>
-        <FastField
+        <Field
           as={C}
           id={name}
           name={name}
